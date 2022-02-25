@@ -69,7 +69,7 @@ class MineClearingActivity : ComponentActivity() {
                             Block(
                                 if (isInList(viewModel.mines, arrayOf(x, y))) BlockType.Mine else BlockType.Num,
                                     BlockState.Close,
-                                    0
+                                    getAroundMinesNum(x, y)
                             ), object : SnapshotMutationPolicy<Block> {
                                 override fun equivalent(a: Block, b: Block): Boolean {
                                     return false
@@ -95,8 +95,8 @@ class MineClearingActivity : ComponentActivity() {
         Box(
             modifier = Modifier.width(25.dp).height(25.dp)
                 .border(1.dp, color = Color.Black)
-                .clickable { onClickListener.invoke() }
                 .background(color = if (block.isOpen()) Color.Gray else Color.White)
+                .clickable { onClickListener.invoke() }
 
         ) {
             if (block.state == BlockState.Open) {
@@ -106,6 +106,36 @@ class MineClearingActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    // 这一段计数代码有待优化
+    private fun getAroundMinesNum(positionX: Int, positionY: Int): Int {
+        var mines = 0
+        if (positionX - 1 >= 0 && positionY - 1 >= 0 && isInList(viewModel.mines, arrayOf(positionX - 1, positionY - 1))) {
+            mines ++
+        }
+        if (positionX - 1 >= 0 && positionY + 1 < 10 && isInList(viewModel.mines, arrayOf(positionX - 1, positionY + 1))) {
+            mines ++
+        }
+        if (positionX - 1 >= 0 && isInList(viewModel.mines, arrayOf(positionX - 1, positionY))) {
+            mines ++
+        }
+        if (positionY - 1 >= 0 && isInList(viewModel.mines, arrayOf(positionX, positionY - 1))) {
+            mines ++
+        }
+        if (positionY + 1 < 10 && isInList(viewModel.mines, arrayOf(positionX, positionY + 1))) {
+            mines ++
+        }
+        if (positionX + 1 < 10 && positionY - 1 >= 0 && isInList(viewModel.mines, arrayOf(positionX + 1, positionY - 1))) {
+            mines ++
+        }
+        if (positionX + 1 < 10 && positionY + 1 < 10 && isInList(viewModel.mines, arrayOf(positionX + 1, positionY + 1))) {
+            mines ++
+        }
+        if (positionX + 1 < 10 && isInList(viewModel.mines, arrayOf(positionX + 1, positionY))) {
+            mines ++
+        }
+        return mines
     }
 
     private fun isInList(a: List<Array<Int>>, b: Array<Int>): Boolean {
