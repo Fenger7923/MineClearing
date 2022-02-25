@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.fenger.mineclearing.mineclearing.MineClearingActivity
 import com.fenger.mineclearing.ui.theme.MineClearingTheme
 import com.fenger.mineclearing.ui.theme.MineTheme
 
@@ -49,7 +50,7 @@ class MainActivity : ComponentActivity() {
             Button(
                 onClick = {
                     val intent = Intent().apply {
-                        setClass(this@MainActivity, GameActivity::class.java)
+                        setClass(this@MainActivity, MineClearingActivity::class.java)
                     }
                     startActivity(intent)
                 },
