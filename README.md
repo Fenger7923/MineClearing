@@ -10,4 +10,4 @@ Android 扫雷小游戏- compose版
 5. 用户点击之后揭晓是否为“地雷” 
 6. 游戏结束：所有的非地雷被打开或者用户“踩雷”
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/09a7bc1a-c793-423a-a5c1-63539352ee82/Untitled.png)
+https://www.notion.so/fengerzhang/2e7c520c71e24c32afca129c02a2234b#530890781d47454b9ea1123c04ff8757
