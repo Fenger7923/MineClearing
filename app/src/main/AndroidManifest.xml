@@ -22,6 +22,7 @@
         </activity>
 
         <activity android:name=".mineclearing.MineClearingActivity"/>
+        <activity android:name=".setting.SettingActivity"/>
     </application>
 
 </manifest>

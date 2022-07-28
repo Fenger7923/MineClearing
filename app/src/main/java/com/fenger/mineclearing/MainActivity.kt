@@ -23,12 +23,14 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.fenger.mineclearing.mineclearing.MineClearingActivity
+import com.fenger.mineclearing.setting.SettingActivity
 import com.fenger.mineclearing.ui.theme.MineClearingTheme
 import com.fenger.mineclearing.ui.theme.MineTheme
+
+var gradeOfDifficulty  = 10 // 初始难度为10，最高为15, 难度作为横向的空格数量
+var verBlockNum = 10 // 纵向的空格数量
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +69,10 @@ class MainActivity : ComponentActivity() {
             Button(
                 onClick = {
                     // TODO 增加游戏难度设置
+                    val intent = Intent().apply {
+                        setClass(this@MainActivity, SettingActivity::class.java)
+                    }
+                    startActivity(intent)
                 },
                 modifier = Modifier
                     .padding(5.dp)

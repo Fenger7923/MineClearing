@@ -28,11 +28,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.fenger.mineclearing.data.Block
 import com.fenger.mineclearing.data.BlockState
 import com.fenger.mineclearing.data.BlockType
+import com.fenger.mineclearing.gradeOfDifficulty
 import com.fenger.mineclearing.ui.theme.MineClearingTheme
+import com.fenger.mineclearing.verBlockNum
+import kotlin.math.ceil
 
 /**
  * @author fengerzhang
@@ -62,24 +66,35 @@ class MineClearingActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            for (x in 0 until 10) {
+            // 纵向格子数不填满，所以留下3个格子
+            // 这里不做异形屏适配，都默认宽小于高
+            verBlockNum =
+                ceil(LocalConfiguration.current.screenHeightDp.dp /
+                        LocalConfiguration.current.screenWidthDp.dp * gradeOfDifficulty).toInt() - 3
+            for (x in 0 until verBlockNum) {
                 Row {
-                    for (y in 0 until 10) {
-                        var block by remember { mutableStateOf(
-                            Block(
-                                if (isInList(viewModel.mines, arrayOf(x, y))) BlockType.Mine else BlockType.Num,
+                    for (y in 0 until gradeOfDifficulty) {
+                        var block by remember {
+                            mutableStateOf(
+                                Block(
+                                    if (isInList(
+                                            viewModel.mines,
+                                            arrayOf(x, y)
+                                        )
+                                    ) BlockType.Mine else BlockType.Num,
                                     BlockState.Close,
                                     getAroundMinesNum(x, y)
-                            ), object : SnapshotMutationPolicy<Block> {
-                                override fun equivalent(a: Block, b: Block): Boolean {
-                                    return false
-                                }
-                            })
+                                ), object : SnapshotMutationPolicy<Block> {
+                                    override fun equivalent(a: Block, b: Block): Boolean {
+                                        return false
+                                    }
+                                })
                         }
 
                         BlockItem(block = block) {
                             if (block.type == BlockType.Mine) {
-                                Toast.makeText(applicationContext, "Lose!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(applicationContext, "Lose!", Toast.LENGTH_SHORT)
+                                    .show()
                                 return@BlockItem
                             }
                             block = block.copy(state = BlockState.Open)
@@ -90,14 +105,19 @@ class MineClearingActivity : ComponentActivity() {
         }
     }
 
+    // 每一个block
     @Composable
     fun BlockItem(block: Block, onClickListener: () -> Unit) {
+        // 这里不做异形屏适配，都默认宽小于高
+        val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+        val blockWidth = screenWidth / gradeOfDifficulty
         Box(
-            modifier = Modifier.width(25.dp).height(25.dp)
+            modifier = Modifier
+                .width(blockWidth)
+                .height(blockWidth)
                 .border(1.dp, color = Color.Black)
                 .background(color = if (block.isOpen()) Color.Gray else Color.White)
                 .clickable { onClickListener.invoke() }
-
         ) {
             if (block.state == BlockState.Open) {
                 Text(
@@ -108,36 +128,53 @@ class MineClearingActivity : ComponentActivity() {
         }
     }
 
-    // 这一段计数代码有待优化
+    // 这一段计数代码有待优化 计算每个空格应该显示的数字
     private fun getAroundMinesNum(positionX: Int, positionY: Int): Int {
         var mines = 0
-        if (positionX - 1 >= 0 && positionY - 1 >= 0 && isInList(viewModel.mines, arrayOf(positionX - 1, positionY - 1))) {
-            mines ++
+        if (positionX - 1 >= 0 && positionY - 1 >= 0 && isInList(
+                viewModel.mines,
+                arrayOf(positionX - 1, positionY - 1)
+            )
+        ) {
+            mines++
         }
-        if (positionX - 1 >= 0 && positionY + 1 < 10 && isInList(viewModel.mines, arrayOf(positionX - 1, positionY + 1))) {
-            mines ++
+        if (positionX - 1 >= 0 && positionY + 1 < 10 && isInList(
+                viewModel.mines,
+                arrayOf(positionX - 1, positionY + 1)
+            )
+        ) {
+            mines++
         }
         if (positionX - 1 >= 0 && isInList(viewModel.mines, arrayOf(positionX - 1, positionY))) {
-            mines ++
+            mines++
         }
         if (positionY - 1 >= 0 && isInList(viewModel.mines, arrayOf(positionX, positionY - 1))) {
-            mines ++
+            mines++
         }
         if (positionY + 1 < 10 && isInList(viewModel.mines, arrayOf(positionX, positionY + 1))) {
-            mines ++
+            mines++
         }
-        if (positionX + 1 < 10 && positionY - 1 >= 0 && isInList(viewModel.mines, arrayOf(positionX + 1, positionY - 1))) {
-            mines ++
+        if (positionX + 1 < 10 && positionY - 1 >= 0 && isInList(
+                viewModel.mines,
+                arrayOf(positionX + 1, positionY - 1)
+            )
+        ) {
+            mines++
         }
-        if (positionX + 1 < 10 && positionY + 1 < 10 && isInList(viewModel.mines, arrayOf(positionX + 1, positionY + 1))) {
-            mines ++
+        if (positionX + 1 < 10 && positionY + 1 < 10 && isInList(
+                viewModel.mines,
+                arrayOf(positionX + 1, positionY + 1)
+            )
+        ) {
+            mines++
         }
         if (positionX + 1 < 10 && isInList(viewModel.mines, arrayOf(positionX + 1, positionY))) {
-            mines ++
+            mines++
         }
         return mines
     }
 
+    // 所选block是否存在雷
     private fun isInList(a: List<Array<Int>>, b: Array<Int>): Boolean {
         for (item in a) {
             if (item.contentEquals(b)) {
